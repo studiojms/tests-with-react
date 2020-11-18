@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import App, { calcularNovoSaldo } from './App';
 
@@ -29,6 +29,33 @@ describe('<App />', () => {
       };
       const newBalance = calcularNovoSaldo(values, 150);
       expect(newBalance).toBe(100);
+    });
+
+    it('should process the operation successfully', () => {
+      render(<App />);
+
+      const balance = screen.getByText('R$ 1000');
+      const transaction = screen.getByLabelText('Saque');
+      const value = screen.getByTestId('valor');
+      const transactionButton = screen.getByText('Realizar operação');
+
+      expect(balance.textContent).toBe('R$ 1000');
+
+      fireEvent.click(transaction, {
+        target: {
+          value: 'saque',
+        },
+      });
+
+      fireEvent.change(value, {
+        target: {
+          value: 10,
+        },
+      });
+
+      fireEvent.click(transactionButton);
+
+      expect(balance.textContent).toBe('R$ 990');
     });
   });
 });
